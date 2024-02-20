@@ -1,0 +1,25 @@
+name: Create a pull request from changes in main
+on:
+  push:
+    branches:
+      - main
+jobs:
+  create_pull_request:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        base-branch: [qa, develop]
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ matrix.base-branch }}
+      - name: Pull main into branch
+        run: |
+          git fetch origin main:main
+          git reset --hard main
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          title: Merge main into ${{ matrix.base-branch }}
+          branch: main
